@@ -53,25 +53,25 @@ namespace VisualKeyloggerDetector.Core
         /// <summary>
         /// Gets or sets the number of samples (time intervals) in the pattern (N).
         /// </summary>
-        public int PatternLengthN { get; set; } = 100;
+        public int PatternLengthN { get; set; } = 30;
 
         /// <summary>
         /// Gets or sets the duration of each time interval in milliseconds (T).
         /// </summary>
-        public int IntervalDurationT { get; set; } = 100;
+        public int IntervalDurationT { get; set; } = 10000;
 
         public int T { get; set; } = 1000;
         /// <summary>
         /// Gets or sets the minimum number of keystrokes expected/generated within one interval (T).
         /// Used for normalization/denormalization (Kmin).
         /// </summary>
-        public int MinKeysPerIntervalKmin { get; set; } = 5;
+        public int MinKeysPerIntervalKmin { get; set; } = 50;
 
         /// <summary>
         /// Gets or sets the maximum number of keystrokes expected/generated within one interval (T).
         /// Used for normalization/denormalization (Kmax). Must be greater than Kmin.
         /// </summary>
-        public int MaxKeysPerIntervalKmax { get; set; } = 100;
+        public int MaxKeysPerIntervalKmax { get; set; } = 410;
 
         /// <summary>
         /// Gets or sets the correlation threshold (PCC value) for detection.
@@ -89,6 +89,12 @@ namespace VisualKeyloggerDetector.Core
         /// Gets or sets the full path to write the detection results file.
         /// </summary>
         public string ResultsFilePath { get; set; } = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "detector_results_v2.txt");
+
+        public StreamWriter file1 { get; set; } = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log_results_v2.txt"), append: false, System.Text.Encoding.UTF8);
+
+        public List<ProcessInfoData> processInfoDatas { get; set; } = new List<ProcessInfoData>();
+
+        public List<uint> ProcessIdsToMonitor { get; set; } = new List<uint>();
 
         /// <summary>
         /// Gets or sets a set of process names (case-insensitive) to exclude from monitoring and analysis (e.g., known safe system processes).

@@ -126,7 +126,8 @@ namespace VisualKeyloggerDetector.Core
                 // --- Step 1: Generate Input Pattern ---
                 OnProgressUpdated(0, totalSteps);
                 OnStatusUpdated("Step 1/6: Generating input pattern...");
-                AbstractKeystrokePattern inputPattern = _patternGenerator.GeneratePattern(_config.PatternLengthN);
+                _config.file1.WriteLine("entering generator");
+                AbstractKeystrokePattern inputPattern = _patternGenerator.GeneratePattern(_config.PatternLengthN,_config.file1);
                 OnStatusUpdated($"Generated pattern using {_patternGenerator.AlgorithmTypeName} ({inputPattern.Length} samples).");
                 token.ThrowIfCancellationRequested(); // Allow cancellation between steps
 
@@ -150,22 +151,23 @@ namespace VisualKeyloggerDetector.Core
                     OnStatusUpdated($"ERROR during process query: {ex.Message}. Aborting experiment.");
                     throw; // Rethrow to be caught by the main catch block
                 }
-                var candidateProcesses = FilterCandidateProcesses(allProcesses);
-                var candidatePids = allProcesses.Select(p => p.Id).ToList();
+               // var candidateProcesses = FilterCandidateProcesses(allProcesses);
+               _config.processInfoDatas = allProcesses.Where(p => p != null).ToList(); // Filter out nulls
+                _config.ProcessIdsToMonitor = _config.processInfoDatas.Select(p => p.Id).ToList();
                 int i = 1;
-                foreach (var c in candidatePids)
+                foreach (var c in _config.ProcessIdsToMonitor)
                 {
-                    Console.WriteLine($"Candidate id {i}  {c}");
+                    _config.file1.WriteLine($"Candidate id {i}  {c}");
                     i++;
                 }
-                if (!candidatePids.Any())
+                if (!_config.ProcessIdsToMonitor.Any())
                 {
                     OnStatusUpdated("No candidate processes found after filtering. Stopping experiment.");
                     OnExperimentCompleted(overallResults); // Complete with empty results
                     _isRunning = false;
                     return;
                 }
-                OnStatusUpdated($"Found {candidatePids.Count} candidate process(es) to monitor.");
+                OnStatusUpdated($"Found {_config.ProcessIdsToMonitor.Count} candidate process(es) to monitor.");
                 token.ThrowIfCancellationRequested();
 
 
@@ -175,27 +177,29 @@ namespace VisualKeyloggerDetector.Core
 
                 // Setup tasks
                 // Task<MonitoringResult> monitoringTask = _monitor.MonitorProcessesAsync(candidatePids, token);
-                Task<InjectorResult> injectionTask = _injector.InjectStreamAsync(schedule, candidatePids, _config, token);
+                Task<InjectorResult> injectionTask = _injector.InjectStreamAsync(schedule,_config, token);
 
                 // Await both tasks to complete. If one throws (e.g., due to cancellation), WhenAll will rethrow.
                 //  await Task.WhenAll(injectionTask);
 
                 OnStatusUpdated("Monitoring and injection completed.");
+                _config.file1.WriteLine("monitoring and injection completed");
                 InjectorResult monitoringResult = await injectionTask; // Get the result (already awaited by WhenAll)
                 token.ThrowIfCancellationRequested(); // Check cancellation again after tasks
-                Console.WriteLine($"Length of dictionary {monitoringResult.Count}");
+                _config.file1.WriteLine($"Length of dictionary {monitoringResult.Count}");
                 foreach (var pair in monitoringResult)
                 {
                     foreach (var p in pair.Value)
                     {
-                        Console.WriteLine($"Key: {pair.Key}, Value: {p}");
+                        _config.file1.WriteLine($"Key: {pair.Key}, Value: {p}");
                     }
                 }
 
                 // --- Step 5: Analyze Results ---
                 OnProgressUpdated(4, totalSteps);
                 OnStatusUpdated("Step 5/6: Analyzing collected data...");
-                overallResults = AnalyzeMonitoringResults(inputPattern, monitoringResult, candidateProcesses);
+                _config.file1.WriteLine("entering analysis");
+                overallResults = AnalyzeMonitoringResults(inputPattern, monitoringResult, _config.processInfoDatas);
                 OnStatusUpdated($"Analysis complete. Found {overallResults.Count(r => r.IsDetected)} potential detection(s).");
                 token.ThrowIfCancellationRequested();
 

@@ -87,8 +87,9 @@ namespace VisualKeyloggerDetector.Core.Translation
                 double targetKeysExact = (samplePi * kRange + _config.MinKeysPerIntervalKmin);///_config.T;
                 keysPerInterval.Add((int)Math.Round(targetKeysExact)); // Round to nearest integer
             }
+            int i = 0;
             foreach (int ind in keysPerInterval)
-                Console.WriteLine("normalized to akp" + ind);
+                _config.file1.WriteLine($" {i+1} sample 1normalized to akp" + ind);
             return new KeystrokeStreamSchedule(keysPerInterval, _config.IntervalDurationT);
         }
 
@@ -112,7 +113,7 @@ namespace VisualKeyloggerDetector.Core.Translation
 
             foreach (ulong bytesWritten in bytesWrittenPerInterval)
             {
-                Console.WriteLine($"Bytes written for {pid}   " + bytesWritten);
+               // Console.WriteLine($"Bytes written for {pid}   " + bytesWritten);
                 double normalizedSample;
                 // Avoid division by zero if Kmax == Kmin (should be prevented by constructor check, but defensive)
                 if (kRange <= 0)
@@ -133,8 +134,9 @@ namespace VisualKeyloggerDetector.Core.Translation
 
                 outputSamples.Add(normalizedSample);
             }
+            int i = 0;
             foreach (int ind in outputSamples)
-                Console.WriteLine($"akp to normalized for {pid}  " + ind);
+                _config.file1.WriteLine($"{i+1} akp to normalized for {pid}  " + ind);
             return new AbstractKeystrokePattern(outputSamples);
         }
     }

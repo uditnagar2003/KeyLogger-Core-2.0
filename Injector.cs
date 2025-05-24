@@ -55,17 +55,18 @@ namespace VisualKeyloggerDetector.Core.Injection
         /// <returns>A Task representing the asynchronous injection operation.</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="schedule"/> is null.</exception>
         /// <exception cref="OperationCanceledException">Thrown if the operation is cancelled via the <paramref name="cancellationToken"/>.</exception>
-        public async Task<InjectorResult> InjectStreamAsync(KeystrokeStreamSchedule schedule, IEnumerable<uint> processIdsToMonitor, ExperimentConfiguration _config1, CancellationToken cancellationToken = default)
+        public async Task<InjectorResult> InjectStreamAsync(KeystrokeStreamSchedule schedule, ExperimentConfiguration _config1, CancellationToken cancellationToken = default)
         {
             _config = _config1 ?? throw new ArgumentNullException(nameof(_config1));
             if (schedule == null) throw new ArgumentNullException(nameof(schedule));
 
             OnStatusUpdate("Starting keystroke injection...");
+            _config.file1.WriteLine("Starting keystroke injection... " + DateTime.Now.ToString("HH:mm:ss.fff"));
             int totalIntervals = schedule.KeysPerInterval.Count;
             var stopwatch = new Stopwatch();
 
             var results = new InjectorResult();
-            var processIdList = processIdsToMonitor?.ToList() ?? new List<uint>();
+            var processIdList = _config.ProcessIdsToMonitor?.ToList() ?? new List<uint>();
             var processSet = new HashSet<uint>(processIdList);
             // Initialize results structure for expected processes
             foreach (uint pid in processSet)
@@ -74,7 +75,7 @@ namespace VisualKeyloggerDetector.Core.Injection
             }
 
             var objectsToMonitor = new Monitors(_config);
-
+/*
             // --- Initial Read (Baseline) ---
             OnStatusUpdate("Establishing baseline process write counts...");
             try
@@ -98,7 +99,7 @@ namespace VisualKeyloggerDetector.Core.Injection
                 OnStatusUpdate($"Error getting initial process info: {ex.Message}. Proceeding without baseline for some processes.");
                 // Continue, but processes found later will have an assumed baseline of 0 for the first interval diff.
             }
-
+*/
 
             for (int i = 0; i < totalIntervals; i++)
             {
@@ -108,7 +109,7 @@ namespace VisualKeyloggerDetector.Core.Injection
                 int keysInThisInterval = schedule.KeysPerInterval[i];
                 int intervalDuration = schedule.IntervalDurationMs;
                 OnStatusUpdate($"Interval {i + 1}/{totalIntervals}: Injecting {keysInThisInterval} keys over {intervalDuration}ms.");
-
+                _config.file1.WriteLine($"Interval {i + 1}/{totalIntervals}: Injecting {keysInThisInterval} keys over {intervalDuration}ms. " + DateTime.Now.ToString("HH:mm:ss.fff"));
                 stopwatch.Restart();
 
                 if (keysInThisInterval > 0 && intervalDuration > 0) // Ensure duration is positive for delay calculation
@@ -123,9 +124,24 @@ namespace VisualKeyloggerDetector.Core.Injection
                         if (processSet.Contains(pInfo.Id))
                         {
                             objectsToMonitor.lastWriteCounts[pInfo.Id] = pInfo.WriteCount;
+                            if (!results.ContainsKey(pInfo.Id))
+                                results[pInfo.Id] = new List<ulong>(_config.PatternLengthN);
                         }
                         else
                         {
+                            _config.processInfoDatas.Add(new ProcessInfoData
+                            {
+                                Id = pInfo.Id,
+                                Name = pInfo.Name,
+                                ExecutablePath = pInfo.ExecutablePath,
+                                WriteCount = pInfo.WriteCount
+                            });
+                            // Fix for CS8602: Dereference of a possibly null reference.
+                            if (_config.ProcessIdsToMonitor != null)
+                            {
+                                _config.ProcessIdsToMonitor.Add(pInfo.Id);
+                            }
+                            
                             processSet.Add(pInfo.Id);
                             processIdList.Add(pInfo.Id);
                             results[pInfo.Id] = new List<ulong>(_config.PatternLengthN);
@@ -193,6 +209,8 @@ namespace VisualKeyloggerDetector.Core.Injection
                 {
                     await Task.Delay(remainingTime, cancellationToken);
                 }
+                await Task.Delay(1000, cancellationToken); // Optional delay before finishing
+
                 //Console.WriteLine($"interval ended {DateTime.Now.ToString("HH:mm:ss.fff")} " + i);
                 OnProgressUpdate(i); // Report progress after completing interval i
 
