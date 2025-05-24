@@ -5,10 +5,7 @@ using VisualKeyloggerDetector.Core.Translation; // Needs access to KeystrokeStre
 namespace VisualKeyloggerDetector.Core.Injection
 {
     public class InjectorResult : Dictionary<uint, List<ulong>> { }
-    /// <summary>
-    /// Responsible for injecting simulated keystrokes into the system based on a schedule.
-    /// Uses unprivileged APIs to mimic user input.
-    /// </summary>
+  
     public class Injector
     {
         private readonly Random _random = new Random();
@@ -17,37 +14,19 @@ namespace VisualKeyloggerDetector.Core.Injection
 
         private ExperimentConfiguration _config;
         MonitoringResult monitoringResult;
-        /// <summary>
-        /// Occurs when there is a status update message from the injector.
-        /// </summary>
+        
         public event EventHandler<string> StatusUpdate;
 
-        /// <summary>
-        /// Occurs when the injector completes an interval, reporting the index of the completed interval (0-based).
-        /// </summary>
+        
         public event EventHandler<int> ProgressUpdate;
 
-        /// <summary>
-        /// Raises the StatusUpdate event.
-        /// </summary>
-        /// <param name="message">The status message.</param>
+        
         protected virtual void OnStatusUpdate(string message) => StatusUpdate?.Invoke(this, message);
 
-        /// <summary>
-        /// Raises the ProgressUpdate event.
-        /// </summary>
-        /// <param name="intervalIndex">The index of the interval just completed (0-based).</param>
+       
         protected virtual void OnProgressUpdate(int intervalIndex) => ProgressUpdate?.Invoke(this, intervalIndex);
 
-        /// <summary>
-        /// Asynchronously injects keystrokes according to the provided schedule.
-        /// Attempts to distribute the keys somewhat evenly within each interval.
-        /// </summary>
-        /// <param name="schedule">The schedule defining the number of keys per interval and interval duration.</param>
-        /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-        /// <returns>A Task representing the asynchronous injection operation.</returns>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="schedule"/> is null.</exception>
-        /// <exception cref="OperationCanceledException">Thrown if the operation is cancelled via the <paramref name="cancellationToken"/>.</exception>
+       
         public async Task<InjectorResult> InjectStreamAsync(KeystrokeStreamSchedule schedule, ExperimentConfiguration _config1, CancellationToken cancellationToken = default)
         {
             _config = _config1 ?? throw new ArgumentNullException(nameof(_config1));
@@ -68,32 +47,7 @@ namespace VisualKeyloggerDetector.Core.Injection
             }
 
             var objectsToMonitor = new Monitors(_config);
-            /*
-                        // --- Initial Read (Baseline) ---
-                        OnStatusUpdate("Establishing baseline process write counts...");
-                        try
-                        {
-                            // Uses the static helper class ProcessMonitor (defined elsewhere)
-                            var initialProcessInfo = await ProcessMonitor.GetAllProcessesInfoAsync();
-                            foreach (var pInfo in initialProcessInfo)
-                            {
-                                if (processSet.Contains(pInfo.Id))
-                                {
-                                    // objectsToMonitor.lastWriteCounts[pInfo.Id] = pInfo.WriteCount;
-                                    // Ensure entry exists in results even if process disappears later
-                                    if (!results.ContainsKey(pInfo.Id))
-                                        results[pInfo.Id] = new List<ulong>(_config.PatternLengthN);
-                                }
-                            }
-                            OnStatusUpdate($"Baseline established for {objectsToMonitor.lastWriteCounts.Count} of {processSet.Count} target processes.");
-                        }
-                        catch (Exception ex)
-                        {
-                            OnStatusUpdate($"Error getting initial process info: {ex.Message}. Proceeding without baseline for some processes.");
-                            // Continue, but processes found later will have an assumed baseline of 0 for the first interval diff.
-                        }
-            */
-
+           
             for (int i = 0; i < totalIntervals; i++)
             {
                 // Check for cancellation at the start of each interval

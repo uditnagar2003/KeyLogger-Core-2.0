@@ -9,11 +9,6 @@ using VisualKeyloggerDetector.Core.Translation;
 
 namespace VisualKeyloggerDetector.Core
 {
-    /// <summary>
-    /// Orchestrates the keylogger detection experiment by coordinating the
-    /// PatternGenerator, PatternTranslator, Injector, Monitor, and Detector components.
-    /// Manages the overall workflow and reports status, progress, and results.
-    /// </summary>
     public class ExperimentController : IDisposable
     {
         private readonly ExperimentConfiguration _config;
@@ -27,32 +22,19 @@ namespace VisualKeyloggerDetector.Core
 
         // --- Events for UI updates ---
 
-        /// <summary>
-        /// Occurs when there is a status update message during the experiment.
-        /// </summary>
+       
         public event EventHandler<string> StatusUpdated;
 
-        /// <summary>
-        /// Occurs when a major step in the experiment progresses.
-        /// Provides the current step index and the total number of steps.
-        /// </summary>
+    
         public event EventHandler<(int current, int total)> ProgressUpdated;
 
-        /// <summary>
-        /// Occurs when the experiment completes, providing the list of detection results.
-        /// This event is raised on successful completion, cancellation, or error.
-        /// </summary>
+       
         public event EventHandler<List<DetectionResult>> ExperimentCompleted;
 
 
         public event EventHandler<DetectionResult> KeyloggerDetected;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ExperimentController"/> class.
-        /// </summary>
-        /// <param name="config">The configuration settings for the experiment.</param>
-        /// <param name="patternAlgorithm">The algorithm used to generate the input pattern.</param>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="config"/> or <paramref name="patternAlgorithm"/> is null.</exception>
+        
         public ExperimentController(ExperimentConfiguration config, IPatternGeneratorAlgorithm patternAlgorithm)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -69,36 +51,15 @@ namespace VisualKeyloggerDetector.Core
             // Example: _injector.StatusUpdate += (s, msg) => OnStatusUpdated($"Injector: {msg}");
         }
 
-        /// <summary>
-        /// Raises the <see cref="StatusUpdated"/> event.
-        /// </summary>
-        /// <param name="message">The status message.</param>
+       
         protected virtual void OnStatusUpdated(string message) => StatusUpdated?.Invoke(this, message);
 
-        /// <summary>
-        /// Raises the <see cref="ProgressUpdated"/> event.
-        /// </summary>
-        /// <param name="current">The current step index (0-based).</param>
-        /// <param name="total">The total number of steps.</param>
         protected virtual void OnProgressUpdated(int current, int total) => ProgressUpdated?.Invoke(this, (current, total));
 
-        /// <summary>
-        /// Raises the <see cref="ExperimentCompleted"/> event.
-        /// </summary>
-        /// <param name="results">The list of detection results obtained.</param>
         protected virtual void OnExperimentCompleted(List<DetectionResult> results) => ExperimentCompleted?.Invoke(this, results);
 
-        /// <summary>
-        /// Gets a value indicating whether the experiment is currently running.
-        /// </summary>
         public bool IsRunning => _isRunning;
 
-        /// <summary>
-        /// Asynchronously starts the keylogger detection experiment.
-        /// This involves generating patterns, identifying processes, running injection and monitoring concurrently,
-        /// analyzing results, and writing output.
-        /// </summary>
-        /// <returns>A Task representing the asynchronous operation.</returns>
         public async Task StartExperimentAsync()
         {
             if (_isRunning)
@@ -228,10 +189,6 @@ namespace VisualKeyloggerDetector.Core
             }
         }
 
-        /// <summary>
-        /// Requests cancellation of the currently running experiment.
-        /// The cancellation is cooperative and may take some time to complete.
-        /// </summary>
         public void StopExperiment()
         {
             if (_isRunning && _cts != null && !_cts.IsCancellationRequested)
@@ -252,12 +209,6 @@ namespace VisualKeyloggerDetector.Core
             }
         }
 
-        /// <summary>
-        /// Filters the list of all running processes to identify candidates for monitoring.
-        /// Excludes known safe processes, processes in system directories, and the idle process.
-        /// </summary>
-        /// <param name="allProcesses">A list of <see cref="ProcessInfoData"/> for all running processes.</param>
-        /// <returns>A filtered list of candidate processes.</returns>
         private List<ProcessInfoData> FilterCandidateProcesses(List<ProcessInfoData> allProcesses)
         {
             if (allProcesses == null) return new List<ProcessInfoData>();
@@ -277,14 +228,6 @@ namespace VisualKeyloggerDetector.Core
             return candidates;
         }
 
-        /// <summary>
-        /// Analyzes the monitoring results by comparing the output pattern of each process
-        /// with the original input pattern using the Detector.
-        /// </summary>
-        /// <param name="inputPattern">The original input <see cref="AbstractKeystrokePattern"/>.</param>
-        /// <param name="monitoringResult">The <see cref="MonitoringResult"/> containing byte counts per interval for monitored processes.</param>
-        /// <param name="candidateProcessInfo">Information about the processes that were monitored.</param>
-        /// <returns>A list of <see cref="DetectionResult"/> for each analyzed process.</returns>
         private List<DetectionResult> AnalyzeMonitoringResults(
             AbstractKeystrokePattern inputPattern,
             InjectorResult monitoringResult,
@@ -360,25 +303,9 @@ namespace VisualKeyloggerDetector.Core
                 }
             }
 
-            // Sort results for better presentation (e.g., by correlation descending, handling NaN)
-            /* detectionResults.Sort((a, b) =>
-             {
-                 // Put NaN values at the end
-               if (double.IsNaN(a.Correlation) && double.IsNaN(b.Correlation)) return 0;
-                 if (double.IsNaN(a.Correlation)) return 1;
-                 if (double.IsNaN(b.Correlation)) return -1;
-                 // Sort by correlation descending
-                 return b.Correlation.CompareTo(a.Correlation);
-             });
-            */
-
             return detectionResults;
         }
 
-        /// <summary>
-        /// Writes the final detection results to the configured text file.
-        /// </summary>
-        /// <param name="results">The list of <see cref="DetectionResult"/> to write.</param>
         private void WriteResultsToFile(List<DetectionResult> results)
         {
             try
@@ -447,21 +374,13 @@ namespace VisualKeyloggerDetector.Core
             }
         }
 
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// Stops the experiment if running and disposes the CancellationTokenSource.
-        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
-        /// Releases unmanaged and - optionally - managed resources.
-        /// </summary>
-        /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+       
         protected virtual void Dispose(bool disposing)
         {
             // No unmanaged resources to dispose directly here, but good practice pattern

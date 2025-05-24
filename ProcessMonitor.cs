@@ -2,18 +2,10 @@
 
 namespace VisualKeyloggerDetector // Main namespace
 {
-    /// <summary>
-    /// Provides static methods for retrieving process information using WMI.
-    /// </summary>
+    
     public static class ProcessMonitor
     {
-        /// <summary>
-        /// Asynchronously gets relevant information (ID, Name, Path, Write Count)
-        /// for all currently running processes using WMI.
-        /// </summary>
-        /// <returns>A Task resulting in a list of <see cref="ProcessInfoData"/> objects.</returns>
-        /// <exception cref="ManagementException">Thrown if there is an error during the WMI query.</exception>
-        /// <exception cref="Exception">Thrown for other unexpected errors during process enumeration.</exception>
+        
         public static async Task<List<ProcessInfoData>> GetAllProcessesInfoAsync()
         {
             var processes = new List<ProcessInfoData>();
@@ -92,12 +84,6 @@ namespace VisualKeyloggerDetector // Main namespace
         }
     }
 
-    /// <summary>
-    /// Data Transfer Object holding basic information about a process relevant for monitoring.
-    /// Note: This class definition might already exist in another file (e.g., DataStructures.cs).
-    /// Ensure you only have ONE definition of this class in your project.
-    /// If it exists elsewhere, you can remove this definition.
-    /// </summary>
     public class ProcessInfoData
     {
         /// <summary> Gets or sets the process name. </summary>

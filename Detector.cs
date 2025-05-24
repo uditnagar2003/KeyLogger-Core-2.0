@@ -1,24 +1,9 @@
 ﻿namespace VisualKeyloggerDetector.Core.Detection
 {
-    /// <summary>
-    /// Responsible for detecting potential keyloggers by analyzing the correlation
-    /// between an input pattern and a process's output pattern.
-    /// Uses the Pearson Product-Moment Correlation Coefficient (PCC).
-    /// </summary>
+    
     public class Detector
     {
-        /// <summary>
-        /// Calculates the Pearson Product-Moment Correlation Coefficient (PCC) between two patterns.
-        /// PCC measures the linear correlation between two sequences.
-        /// </summary>
-        /// <param name="patternP">The first pattern (e.g., the injected input AKP).</param>
-        /// <param name="patternQ">The second pattern (e.g., the monitored output AKP of a process).</param>
-        /// <returns>
-        /// The PCC value, ranging from -1.0 (perfect negative correlation) to 1.0 (perfect positive correlation).
-        /// Returns <see cref="double.NaN"/> if the calculation is not possible (e.g., fewer than 2 samples, or one pattern has zero variance).
-        /// </returns>
-        /// <exception cref="ArgumentNullException">Thrown if <paramref name="patternP"/> or <paramref name="patternQ"/> is null.</exception>
-        /// <exception cref="ArgumentException">Thrown if the patterns have different lengths.</exception>
+       
         public double CalculatePCC(AbstractKeystrokePattern patternP, AbstractKeystrokePattern patternQ)
         {
             if (patternP == null) throw new ArgumentNullException(nameof(patternP));
@@ -85,13 +70,7 @@
             return Math.Max(-1.0, Math.Min(1.0, correlation));
         }
 
-        /// <summary>
-        /// Determines if a process should be flagged as potentially malicious based on its calculated PCC value
-        /// and the configured detection threshold. This implementation triggers on strong positive correlation.
-        /// </summary>
-        /// <param name="pccValue">The calculated Pearson Correlation Coefficient.</param>
-        /// <param name="threshold">The minimum positive correlation value required to trigger detection.</param>
-        /// <returns>True if the <paramref name="pccValue"/> is valid and exceeds the <paramref name="threshold"/>; otherwise, false.</returns>
+      
         public bool ShouldTriggerDetection(double pccValue, double threshold)
         {
             // Check if PCC is valid (not NaN) and greater than the positive threshold.

@@ -41,11 +41,7 @@ namespace VisualKeyloggerDetector.Core.Utils
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool CloseHandle(IntPtr hObject);
 
-        /// <summary>
-        /// Suspends the specified process.
-        /// </summary>
-        /// <param name="processId">The ID of the process to suspend.</param>
-        /// <returns>True if successful, False otherwise.</returns>
+       
         public static bool SuspendProcess(uint processId)
         {
             IntPtr hProcess = IntPtr.Zero;
@@ -82,11 +78,7 @@ namespace VisualKeyloggerDetector.Core.Utils
             }
         }
 
-        /// <summary>
-        /// Resumes the specified process.
-        /// </summary>
-        /// <param name="processId">The ID of the process to resume.</param>
-        /// <returns>True if successful, False otherwise.</returns>
+       
         public static bool ResumeProcess(uint processId)
         {
             IntPtr hProcess = IntPtr.Zero;
@@ -122,11 +114,7 @@ namespace VisualKeyloggerDetector.Core.Utils
                 }
             }
         }
-        /// <summary>
-        /// Terminates the specified process.
-        /// </summary>
-        /// <param name="processId">The ID of the process to terminate.</param>
-        /// <returns>True if successful, False otherwise.</returns>
+       
         public static bool TerminateProcess(uint processId)
         {
             IntPtr hProcess = IntPtr.Zero;

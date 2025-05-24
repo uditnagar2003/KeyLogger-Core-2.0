@@ -2,9 +2,7 @@
 
 namespace VisualKeyloggerDetector // Main namespace
 {
-    /// <summary>
-    /// Provides static methods for simulating keyboard input using the Win32 SendInput API.
-    /// </summary>
+    
     public static class KeyInputInjector
     {
         // Win32 API Imports for SendInput
@@ -80,12 +78,6 @@ namespace VisualKeyloggerDetector // Main namespace
         private const ushort VK_MENU = 0x12; // ALT key
 
 
-        /// <summary>
-        /// Sends a single character keystroke (press and release) using SendInput.
-        /// Handles basic shift state based on VkKeyScan result.
-        /// </summary>
-        /// <param name="character">The character to send.</param>
-        /// <exception cref="Exception">Throws exception if SendInput fails.</exception>
         public static void SendCharacter(char character)
         {
             short vkScanResult = VkKeyScan(character);
@@ -146,13 +138,7 @@ namespace VisualKeyloggerDetector // Main namespace
             Thread.Sleep(5); // Adjust delay as needed, or remove if unnecessary
         }
 
-        /// <summary>
-        /// Helper method to create a KEYBDINPUT structure wrapped in an INPUT structure.
-        /// </summary>
-        /// <param name="vk">Virtual key code.</param>
-        /// <param name="scan">Scan code (optional, usually 0 when using VK).</param>
-        /// <param name="flags">Flags (e.g., KEYEVENTF_KEYUP).</param>
-        /// <returns>An INPUT structure representing a keyboard event.</returns>
+        
         private static INPUT CreateKeyInput(ushort vk, ushort scan, uint flags)
         {
             return new INPUT
