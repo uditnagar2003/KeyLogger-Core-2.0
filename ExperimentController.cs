@@ -201,6 +201,7 @@ namespace VisualKeyloggerDetector.Core
                 _config.file1.WriteLine("entering analysis");
                 overallResults = AnalyzeMonitoringResults(inputPattern, monitoringResult, _config.processInfoDatas);
                 OnStatusUpdated($"Analysis complete. Found {overallResults.Count(r => r.IsDetected)} potential detection(s).");
+                _config.file1.WriteLine($"Analysis complete. Found {overallResults.Count(r => r.IsDetected)} potential detection(s).");
                 token.ThrowIfCancellationRequested();
 
                 // --- Step 6: Write Results ---
@@ -263,7 +264,7 @@ namespace VisualKeyloggerDetector.Core
         /// </summary>
         /// <param name="allProcesses">A list of <see cref="ProcessInfoData"/> for all running processes.</param>
         /// <returns>A filtered list of candidate processes.</returns>
-        private List<ProcessInfoData> FilterCandidateProcesses(List<ProcessInfoData> allProcesses)
+       /* private List<ProcessInfoData> FilterCandidateProcesses(List<ProcessInfoData> allProcesses)
         {
             if (allProcesses == null) return new List<ProcessInfoData>();
 
@@ -280,7 +281,7 @@ namespace VisualKeyloggerDetector.Core
             sw.Stop();
             // OnStatusUpdated($"Filtering took {sw.ElapsedMilliseconds}ms"); // Optional performance log
             return candidates;
-        }
+        }*/
 
         /// <summary>
         /// Analyzes the monitoring results by comparing the output pattern of each process
@@ -298,21 +299,27 @@ namespace VisualKeyloggerDetector.Core
             var detectionResults = new List<DetectionResult>();
             // Create a lookup map for quick access to process info by PID
             var processInfoMap = candidateProcessInfo.Where(p => p != null).ToDictionary(p => p.Id);
-            Console.WriteLine($" monitoring result length in analyzer {monitoringResult.Count}");
+            _config.file1.WriteLine($" monitoring result length in analyzer {monitoringResult.Count}");
 
             if (monitoringResult == null) return detectionResults;
 
             foreach (var kvp in monitoringResult)
             {
                 uint pid = kvp.Key;
-                Console.WriteLine($"analyze monitoring result {pid}");
+                _config.file1.WriteLine($"analyze monitoring result {pid}");
                 List<ulong> bytesPerInterval = kvp.Value;
 
                 // Ensure we have info for this process and the data length is correct
-                if (!processInfoMap.TryGetValue(pid, out var pInfo)) continue;
-                if (bytesPerInterval == null || bytesPerInterval.Count != _config.PatternLengthN)
+                if (!processInfoMap.TryGetValue(pid, out var pInfo))
+                {
+                    _config.file1.WriteLine($"exited loop due to abencse of process id {pid}");
+
+                    continue;
+                }
+                    if (bytesPerInterval == null || bytesPerInterval.Count != _config.PatternLengthN)
                 {
                     OnStatusUpdated($"Warning: Data length mismatch for PID {pid}. Expected {_config.PatternLengthN}, got {bytesPerInterval?.Count ?? 0}. Skipping analysis.");
+                    _config.file1.WriteLine($"exited loop due to data length mismatch {pid}");
                     continue;
                 }
 
@@ -324,7 +331,7 @@ namespace VisualKeyloggerDetector.Core
                 // Skip processes with very low average writes during tests, below the configured threshold.
                 if (avgBytes < _config.MinAverageWriteBytesPerInterval)
                 {
-                    Console.WriteLine($"exited loop due to less average writecount {pid}");
+                    _config.file1.WriteLine($"exited loop due to less average writecount {pid}");
                     continue;
                 }
                 // --- Analysis ---
