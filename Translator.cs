@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace VisualKeyloggerDetector.Core.Translation
@@ -87,10 +88,13 @@ namespace VisualKeyloggerDetector.Core.Translation
                 double targetKeysExact = (samplePi * kRange + _config.MinKeysPerIntervalKmin);///_config.T;
                 keysPerInterval.Add((int)Math.Round(targetKeysExact)); // Round to nearest integer
             }
-            int i = 0;
+            int i = 1;
             foreach (int ind in keysPerInterval)
-                _config.file1.WriteLine($" {i+1} sample 1normalized to akp" + ind);
-            return new KeystrokeStreamSchedule(keysPerInterval, _config.IntervalDurationT);
+            {
+                Debug.WriteLine($" {i} sample 1normalized to akp" + ind);
+            i++;
+            }
+                return new KeystrokeStreamSchedule(keysPerInterval, _config.IntervalDurationT);
         }
 
         /// <summary>
@@ -136,7 +140,7 @@ namespace VisualKeyloggerDetector.Core.Translation
             }
             int i = 0;
             foreach (int ind in outputSamples)
-                _config.file1.WriteLine($"{i+1} akp to normalized for {pid}  " + ind);
+                Debug.WriteLine($"{i+1} akp to normalized for {pid}  " + ind);
             return new AbstractKeystrokePattern(outputSamples);
         }
     }

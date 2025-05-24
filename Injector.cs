@@ -61,7 +61,7 @@ namespace VisualKeyloggerDetector.Core.Injection
             if (schedule == null) throw new ArgumentNullException(nameof(schedule));
 
             OnStatusUpdate("Starting keystroke injection...");
-            _config.file1.WriteLine("Starting keystroke injection... " + DateTime.Now.ToString("HH:mm:ss.fff"));
+            Debug.WriteLine("Starting keystroke injection... " + DateTime.Now.ToString("HH:mm:ss.fff"));
             int totalIntervals = schedule.KeysPerInterval.Count;
             var stopwatch = new Stopwatch();
 
@@ -109,7 +109,7 @@ namespace VisualKeyloggerDetector.Core.Injection
                 int keysInThisInterval = schedule.KeysPerInterval[i];
                 int intervalDuration = schedule.IntervalDurationMs;
                 OnStatusUpdate($"Interval {i + 1}/{totalIntervals}: Injecting {keysInThisInterval} keys over {intervalDuration}ms.");
-                _config.file1.WriteLine($"Interval {i + 1}/{totalIntervals}: Injecting {keysInThisInterval} keys over {intervalDuration}ms. " + DateTime.Now.ToString("HH:mm:ss.fff"));
+                Debug.WriteLine($"Interval {i + 1}/{totalIntervals}: Injecting {keysInThisInterval} keys over {intervalDuration}ms. " + DateTime.Now.ToString("HH:mm:ss.fff"));
                 stopwatch.Restart();
 
                 if (keysInThisInterval > 0 && intervalDuration > 0) // Ensure duration is positive for delay calculation
@@ -186,6 +186,7 @@ namespace VisualKeyloggerDetector.Core.Injection
                 stopwatch.Stop();
 
                 Task<MonitoringResult> result;
+                Debug.WriteLine($"Monitoring processes for interval {i + 1} at {DateTime.Now.ToString("HH:mm:ss.fff")}");
                 result = objectsToMonitor.MonitorProcessesAsync(processIdList, cancellationToken);
 
                 monitoringResult = await result;
@@ -195,10 +196,17 @@ namespace VisualKeyloggerDetector.Core.Injection
                         results[pid] = new List<ulong>(_config.PatternLengthN); // Should not happen if initialized correctly, but safety check
 
                     // Only add if the list isn't already full (e.g., due to errors)
-                    if (results[pid].Count < _config.PatternLengthN)
+                    try
                     {
-                        results[pid].Add(monitoringResult[pid]);
-                        // Console.WriteLine($"PID {pid}: Interval {i + 1} - Bytes Written: {monitoringResult[pid]} {DateTime.Now.ToString("HH:mm:ss.fff")}");
+                        if (results[pid].Count < _config.PatternLengthN&& monitoringResult.ContainsKey(pid))
+                        {
+                            results[pid].Add(monitoringResult[pid]);
+                            // Console.WriteLine($"PID {pid}: Interval {i + 1} - Bytes Written: {monitoringResult[pid]} {DateTime.Now.ToString("HH:mm:ss.fff")}");
+                        }
+                    }
+                    catch
+                    {
+                        Debug.WriteLine("error not finding the process id in monitoring result");
                     }
                 }
 

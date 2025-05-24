@@ -126,8 +126,8 @@ namespace VisualKeyloggerDetector.Core
                 // --- Step 1: Generate Input Pattern ---
                 OnProgressUpdated(0, totalSteps);
                 OnStatusUpdated("Step 1/6: Generating input pattern...");
-                _config.file1.WriteLine("entering generator");
-                AbstractKeystrokePattern inputPattern = _patternGenerator.GeneratePattern(_config.PatternLengthN,_config.file1);
+                Debug.WriteLine("entering generator");
+                AbstractKeystrokePattern inputPattern = _patternGenerator.GeneratePattern(_config.PatternLengthN);
                 OnStatusUpdated($"Generated pattern using {_patternGenerator.AlgorithmTypeName} ({inputPattern.Length} samples).");
                 token.ThrowIfCancellationRequested(); // Allow cancellation between steps
 
@@ -151,13 +151,14 @@ namespace VisualKeyloggerDetector.Core
                     OnStatusUpdated($"ERROR during process query: {ex.Message}. Aborting experiment.");
                     throw; // Rethrow to be caught by the main catch block
                 }
-               // var candidateProcesses = FilterCandidateProcesses(allProcesses);
-               _config.processInfoDatas = allProcesses.Where(p => p != null).ToList(); // Filter out nulls
+                  _config.processInfoDatas = FilterCandidateProcesses(allProcesses);
+              // _config.processInfoDatas = allProcesses.Where(p => p != null).ToList(); // Filter out nulls
                 _config.ProcessIdsToMonitor = _config.processInfoDatas.Select(p => p.Id).ToList();
-                int i = 1;
-                foreach (var c in _config.ProcessIdsToMonitor)
+                int length = _config.ProcessIdsToMonitor.Count;
+                Debug.WriteLine($"INfo process legthn {length}");
+                for(int i=0;i<length;i++)
                 {
-                    _config.file1.WriteLine($"Candidate id {i}  {c}");
+                    Debug.WriteLine($"Candidate id {i+1}  {_config.ProcessIdsToMonitor[i]}");
                     i++;
                 }
                 if (!_config.ProcessIdsToMonitor.Any())
@@ -183,25 +184,25 @@ namespace VisualKeyloggerDetector.Core
                 //  await Task.WhenAll(injectionTask);
 
                 OnStatusUpdated("Monitoring and injection completed.");
-                _config.file1.WriteLine("monitoring and injection completed");
+                Debug.WriteLine("monitoring and injection completed");
                 InjectorResult monitoringResult = await injectionTask; // Get the result (already awaited by WhenAll)
                 token.ThrowIfCancellationRequested(); // Check cancellation again after tasks
-                _config.file1.WriteLine($"Length of dictionary {monitoringResult.Count}");
+                Debug.WriteLine($"Length of dictionary {monitoringResult.Count}");
                 foreach (var pair in monitoringResult)
                 {
                     foreach (var p in pair.Value)
                     {
-                        _config.file1.WriteLine($"Key: {pair.Key}, Value: {p}");
+                        Debug.WriteLine($"Key: {pair.Key}, Value: {p}");
                     }
                 }
 
                 // --- Step 5: Analyze Results ---
                 OnProgressUpdated(4, totalSteps);
                 OnStatusUpdated("Step 5/6: Analyzing collected data...");
-                _config.file1.WriteLine("entering analysis");
+                Debug.WriteLine("entering analysis");
                 overallResults = AnalyzeMonitoringResults(inputPattern, monitoringResult, _config.processInfoDatas);
                 OnStatusUpdated($"Analysis complete. Found {overallResults.Count(r => r.IsDetected)} potential detection(s).");
-                _config.file1.WriteLine($"Analysis complete. Found {overallResults.Count(r => r.IsDetected)} potential detection(s).");
+                Debug.WriteLine($"Analysis complete. Found {overallResults.Count(r => r.IsDetected)} potential detection(s).");
                 token.ThrowIfCancellationRequested();
 
                 // --- Step 6: Write Results ---
@@ -211,7 +212,7 @@ namespace VisualKeyloggerDetector.Core
                 OnStatusUpdated($"Results saved to {_config.ResultsFilePath}");
 
                 OnProgressUpdated(totalSteps, totalSteps); // Final progress update
-                OnExperimentCompleted(overallResults); // Signal successful completion
+                OnExperimentCompleted(overallResults); // Signal successful completion*/
             }
             catch (OperationCanceledException)
             {
@@ -264,7 +265,7 @@ namespace VisualKeyloggerDetector.Core
         /// </summary>
         /// <param name="allProcesses">A list of <see cref="ProcessInfoData"/> for all running processes.</param>
         /// <returns>A filtered list of candidate processes.</returns>
-       /* private List<ProcessInfoData> FilterCandidateProcesses(List<ProcessInfoData> allProcesses)
+        private List<ProcessInfoData> FilterCandidateProcesses(List<ProcessInfoData> allProcesses)
         {
             if (allProcesses == null) return new List<ProcessInfoData>();
 
@@ -281,7 +282,7 @@ namespace VisualKeyloggerDetector.Core
             sw.Stop();
             // OnStatusUpdated($"Filtering took {sw.ElapsedMilliseconds}ms"); // Optional performance log
             return candidates;
-        }*/
+        }
 
         /// <summary>
         /// Analyzes the monitoring results by comparing the output pattern of each process
@@ -299,27 +300,27 @@ namespace VisualKeyloggerDetector.Core
             var detectionResults = new List<DetectionResult>();
             // Create a lookup map for quick access to process info by PID
             var processInfoMap = candidateProcessInfo.Where(p => p != null).ToDictionary(p => p.Id);
-            _config.file1.WriteLine($" monitoring result length in analyzer {monitoringResult.Count}");
+            Debug.WriteLine($" monitoring result length in analyzer {monitoringResult.Count}");
 
             if (monitoringResult == null) return detectionResults;
 
             foreach (var kvp in monitoringResult)
             {
                 uint pid = kvp.Key;
-                _config.file1.WriteLine($"analyze monitoring result {pid}");
+                Debug.WriteLine($"analyze monitoring result {pid}");
                 List<ulong> bytesPerInterval = kvp.Value;
 
                 // Ensure we have info for this process and the data length is correct
                 if (!processInfoMap.TryGetValue(pid, out var pInfo))
                 {
-                    _config.file1.WriteLine($"exited loop due to abencse of process id {pid}");
+                    Debug.WriteLine($"exited loop due to abencse of process id {pid}");
 
                     continue;
                 }
                     if (bytesPerInterval == null || bytesPerInterval.Count != _config.PatternLengthN)
                 {
                     OnStatusUpdated($"Warning: Data length mismatch for PID {pid}. Expected {_config.PatternLengthN}, got {bytesPerInterval?.Count ?? 0}. Skipping analysis.");
-                    _config.file1.WriteLine($"exited loop due to data length mismatch {pid}");
+                    Debug.WriteLine($"exited loop due to data length mismatch {pid}");
                     continue;
                 }
 
@@ -331,7 +332,7 @@ namespace VisualKeyloggerDetector.Core
                 // Skip processes with very low average writes during tests, below the configured threshold.
                 if (avgBytes < _config.MinAverageWriteBytesPerInterval)
                 {
-                    _config.file1.WriteLine($"exited loop due to less average writecount {pid}");
+                    Debug.WriteLine($"exited loop due to less average writecount {pid}");
                     continue;
                 }
                 // --- Analysis ---

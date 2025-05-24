@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using VisualKeyloggerDetector.Core.PatternGeneration; // Needs interface
 
 namespace VisualKeyloggerDetector.Core.PatternGeneration // Corrected namespace
@@ -26,14 +27,15 @@ namespace VisualKeyloggerDetector.Core.PatternGeneration // Corrected namespace
         /// <param name="n">The desired number of samples (length) for the pattern.</param>
         /// <returns>A new <see cref="AbstractKeystrokePattern"/> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="n"/> is not positive.</exception>
-        public AbstractKeystrokePattern GeneratePattern(int n,StreamWriter streamWriter)
+        public AbstractKeystrokePattern GeneratePattern(int n)
         {
             if (n <= 0) throw new ArgumentOutOfRangeException(nameof(n), "Pattern length must be positive.");
             var samples = _algorithm.GenerateSamples(n);
-            int i = 0;
+            int i = 1;
             foreach (var num in samples)
             {
-                streamWriter.WriteLine($"{i+1} Generated {num} sample{AlgorithmTypeName} algorithm.\n");
+                Debug.WriteLine($"{i} Generated {num} sample{AlgorithmTypeName} algorithm.\n");
+                i++;
             }
             return new AbstractKeystrokePattern(samples);
         }

@@ -39,7 +39,7 @@ namespace VisualKeyloggerDetector
             // Uncomment the desired algorithm:
             IPatternGeneratorAlgorithm algorithm=null;
             Random rnd = new Random();
-            int algo = rnd.Next(1, 4);
+            int algo = 2;
             switch(algo)
             { 
                 case 1:

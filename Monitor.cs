@@ -230,7 +230,7 @@ namespace VisualKeyloggerDetector.Core.Monitoring
             */
 
             OnStatusUpdate("Monitoring finished.");
-            _config.file1.WriteLine($"Monitoring finished. {DateTime.Now.ToString("HH:mm:ss.fff")}");
+            Debug.WriteLine($"Monitoring finished. {DateTime.Now.ToString("HH:mm:ss.fff")}");
             return results;
         }
     }
