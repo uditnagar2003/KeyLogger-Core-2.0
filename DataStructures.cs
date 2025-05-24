@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO; // Added for Path
-using System.Linq; // Added for Linq
-
-namespace VisualKeyloggerDetector.Core
+﻿namespace VisualKeyloggerDetector.Core
 {
     /// <summary>
     /// Represents a normalized pattern of activity (keystrokes or bytes)
@@ -53,7 +48,7 @@ namespace VisualKeyloggerDetector.Core
         /// <summary>
         /// Gets or sets the number of samples (time intervals) in the pattern (N).
         /// </summary>
-        public int PatternLengthN { get; set; } = 10;
+        public int PatternLengthN { get; set; } = 3;
 
         /// <summary>
         /// Gets or sets the duration of each time interval in milliseconds (T).
@@ -65,13 +60,13 @@ namespace VisualKeyloggerDetector.Core
         /// Gets or sets the minimum number of keystrokes expected/generated within one interval (T).
         /// Used for normalization/denormalization (Kmin).
         /// </summary>
-        public int MinKeysPerIntervalKmin { get; set; } = 50;
+        public int MinKeysPerIntervalKmin { get; set; } = 5;
 
         /// <summary>
         /// Gets or sets the maximum number of keystrokes expected/generated within one interval (T).
         /// Used for normalization/denormalization (Kmax). Must be greater than Kmin.
         /// </summary>
-        public int MaxKeysPerIntervalKmax { get; set; } = 410;
+        public int MaxKeysPerIntervalKmax { get; set; } = 18;
 
         /// <summary>
         /// Gets or sets the correlation threshold (PCC value) for detection.
@@ -90,10 +85,10 @@ namespace VisualKeyloggerDetector.Core
         /// </summary>
         public string ResultsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "detector_results_v2.txt");
 
-        
+
         public List<ProcessInfoData> processInfoDatas = new List<ProcessInfoData>();
 
-        public List<uint> ProcessIdsToMonitor  = new List<uint>();
+        public List<uint> ProcessIdsToMonitor = new List<uint>();
 
         /// <summary>
         /// Gets or sets a set of process names (case-insensitive) to exclude from monitoring and analysis (e.g., known safe system processes).

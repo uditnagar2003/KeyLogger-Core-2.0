@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 
 namespace VisualKeyloggerDetector.Core.Translation
 {
@@ -92,9 +89,9 @@ namespace VisualKeyloggerDetector.Core.Translation
             foreach (int ind in keysPerInterval)
             {
                 Debug.WriteLine($" {i} sample 1normalized to akp" + ind);
-            i++;
+                i++;
             }
-                return new KeystrokeStreamSchedule(keysPerInterval, _config.IntervalDurationT);
+            return new KeystrokeStreamSchedule(keysPerInterval, _config.IntervalDurationT);
         }
 
         /// <summary>
@@ -117,7 +114,7 @@ namespace VisualKeyloggerDetector.Core.Translation
 
             foreach (ulong bytesWritten in bytesWrittenPerInterval)
             {
-               // Console.WriteLine($"Bytes written for {pid}   " + bytesWritten);
+                // Console.WriteLine($"Bytes written for {pid}   " + bytesWritten);
                 double normalizedSample;
                 // Avoid division by zero if Kmax == Kmin (should be prevented by constructor check, but defensive)
                 if (kRange <= 0)
@@ -140,7 +137,7 @@ namespace VisualKeyloggerDetector.Core.Translation
             }
             int i = 0;
             foreach (int ind in outputSamples)
-                Debug.WriteLine($"{i+1} akp to normalized for {pid}  " + ind);
+                Debug.WriteLine($"{i + 1} akp to normalized for {pid}  " + ind);
             return new AbstractKeystrokePattern(outputSamples);
         }
     }

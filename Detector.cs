@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace VisualKeyloggerDetector.Core.Detection
+﻿namespace VisualKeyloggerDetector.Core.Detection
 {
     /// <summary>
     /// Responsible for detecting potential keyloggers by analyzing the correlation

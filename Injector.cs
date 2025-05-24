@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using VisualKeyloggerDetector.Core.Translation; // Needs access to KeystrokeStreamSchedule
-using VisualKeyloggerDetector;
+﻿using System.Diagnostics;
 using VisualKeyloggerDetector.Core.Monitoring;
-using System.Linq;
-using System.Security.Cryptography;
+using VisualKeyloggerDetector.Core.Translation; // Needs access to KeystrokeStreamSchedule
 
 namespace VisualKeyloggerDetector.Core.Injection
 {
@@ -75,31 +68,31 @@ namespace VisualKeyloggerDetector.Core.Injection
             }
 
             var objectsToMonitor = new Monitors(_config);
-/*
-            // --- Initial Read (Baseline) ---
-            OnStatusUpdate("Establishing baseline process write counts...");
-            try
-            {
-                // Uses the static helper class ProcessMonitor (defined elsewhere)
-                var initialProcessInfo = await ProcessMonitor.GetAllProcessesInfoAsync();
-                foreach (var pInfo in initialProcessInfo)
-                {
-                    if (processSet.Contains(pInfo.Id))
-                    {
-                        // objectsToMonitor.lastWriteCounts[pInfo.Id] = pInfo.WriteCount;
-                        // Ensure entry exists in results even if process disappears later
-                        if (!results.ContainsKey(pInfo.Id))
-                            results[pInfo.Id] = new List<ulong>(_config.PatternLengthN);
-                    }
-                }
-                OnStatusUpdate($"Baseline established for {objectsToMonitor.lastWriteCounts.Count} of {processSet.Count} target processes.");
-            }
-            catch (Exception ex)
-            {
-                OnStatusUpdate($"Error getting initial process info: {ex.Message}. Proceeding without baseline for some processes.");
-                // Continue, but processes found later will have an assumed baseline of 0 for the first interval diff.
-            }
-*/
+            /*
+                        // --- Initial Read (Baseline) ---
+                        OnStatusUpdate("Establishing baseline process write counts...");
+                        try
+                        {
+                            // Uses the static helper class ProcessMonitor (defined elsewhere)
+                            var initialProcessInfo = await ProcessMonitor.GetAllProcessesInfoAsync();
+                            foreach (var pInfo in initialProcessInfo)
+                            {
+                                if (processSet.Contains(pInfo.Id))
+                                {
+                                    // objectsToMonitor.lastWriteCounts[pInfo.Id] = pInfo.WriteCount;
+                                    // Ensure entry exists in results even if process disappears later
+                                    if (!results.ContainsKey(pInfo.Id))
+                                        results[pInfo.Id] = new List<ulong>(_config.PatternLengthN);
+                                }
+                            }
+                            OnStatusUpdate($"Baseline established for {objectsToMonitor.lastWriteCounts.Count} of {processSet.Count} target processes.");
+                        }
+                        catch (Exception ex)
+                        {
+                            OnStatusUpdate($"Error getting initial process info: {ex.Message}. Proceeding without baseline for some processes.");
+                            // Continue, but processes found later will have an assumed baseline of 0 for the first interval diff.
+                        }
+            */
 
             for (int i = 0; i < totalIntervals; i++)
             {
@@ -141,7 +134,7 @@ namespace VisualKeyloggerDetector.Core.Injection
                             {
                                 _config.ProcessIdsToMonitor.Add(pInfo.Id);
                             }
-                            
+
                             processSet.Add(pInfo.Id);
                             processIdList.Add(pInfo.Id);
                             results[pInfo.Id] = new List<ulong>(_config.PatternLengthN);
@@ -198,7 +191,7 @@ namespace VisualKeyloggerDetector.Core.Injection
                     // Only add if the list isn't already full (e.g., due to errors)
                     try
                     {
-                        if (results[pid].Count < _config.PatternLengthN&& monitoringResult.ContainsKey(pid))
+                        if (results[pid].Count < _config.PatternLengthN && monitoringResult.ContainsKey(pid))
                         {
                             results[pid].Add(monitoringResult[pid]);
                             // Console.WriteLine($"PID {pid}: Interval {i + 1} - Bytes Written: {monitoringResult[pid]} {DateTime.Now.ToString("HH:mm:ss.fff")}");

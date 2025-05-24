@@ -1,6 +1,4 @@
-﻿using System;
-using VisualKeyloggerDetector.Core; // For DetectionResult
-using Windows.Data.Xml.Dom;
+﻿using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
 
 namespace VisualKeyloggerDetector.Core.Utils

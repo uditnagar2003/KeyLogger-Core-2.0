@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using VisualKeyloggerDetector;
+﻿using System.Diagnostics;
 using VisualKeyloggerDetector.Core.Detection;
 using VisualKeyloggerDetector.Core.Injection;
 using VisualKeyloggerDetector.Core.Monitoring;
@@ -151,14 +144,14 @@ namespace VisualKeyloggerDetector.Core
                     OnStatusUpdated($"ERROR during process query: {ex.Message}. Aborting experiment.");
                     throw; // Rethrow to be caught by the main catch block
                 }
-                  _config.processInfoDatas = FilterCandidateProcesses(allProcesses);
-              // _config.processInfoDatas = allProcesses.Where(p => p != null).ToList(); // Filter out nulls
+                _config.processInfoDatas = FilterCandidateProcesses(allProcesses);
+                // _config.processInfoDatas = allProcesses.Where(p => p != null).ToList(); // Filter out nulls
                 _config.ProcessIdsToMonitor = _config.processInfoDatas.Select(p => p.Id).ToList();
                 int length = _config.ProcessIdsToMonitor.Count;
                 Debug.WriteLine($"INfo process legthn {length}");
-                for(int i=0;i<length;i++)
+                for (int i = 0; i < length; i++)
                 {
-                    Debug.WriteLine($"Candidate id {i+1}  {_config.ProcessIdsToMonitor[i]}");
+                    Debug.WriteLine($"Candidate id {i + 1}  {_config.ProcessIdsToMonitor[i]}");
                     i++;
                 }
                 if (!_config.ProcessIdsToMonitor.Any())
@@ -178,7 +171,7 @@ namespace VisualKeyloggerDetector.Core
 
                 // Setup tasks
                 // Task<MonitoringResult> monitoringTask = _monitor.MonitorProcessesAsync(candidatePids, token);
-                Task<InjectorResult> injectionTask = _injector.InjectStreamAsync(schedule,_config, token);
+                Task<InjectorResult> injectionTask = _injector.InjectStreamAsync(schedule, _config, token);
 
                 // Await both tasks to complete. If one throws (e.g., due to cancellation), WhenAll will rethrow.
                 //  await Task.WhenAll(injectionTask);
@@ -317,7 +310,7 @@ namespace VisualKeyloggerDetector.Core
 
                     continue;
                 }
-                    if (bytesPerInterval == null || bytesPerInterval.Count != _config.PatternLengthN)
+                if (bytesPerInterval == null || bytesPerInterval.Count != _config.PatternLengthN)
                 {
                     OnStatusUpdated($"Warning: Data length mismatch for PID {pid}. Expected {_config.PatternLengthN}, got {bytesPerInterval?.Count ?? 0}. Skipping analysis.");
                     Debug.WriteLine($"exited loop due to data length mismatch {pid}");

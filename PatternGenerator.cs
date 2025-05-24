@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using VisualKeyloggerDetector.Core.PatternGeneration; // Needs interface
+﻿using System.Diagnostics;
 
 namespace VisualKeyloggerDetector.Core.PatternGeneration // Corrected namespace
 {

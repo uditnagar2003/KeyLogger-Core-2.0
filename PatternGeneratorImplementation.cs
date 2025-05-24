@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace VisualKeyloggerDetector.Core.PatternGeneration
+﻿namespace VisualKeyloggerDetector.Core.PatternGeneration
 {
     /// <summary>
     /// Interface for algorithms that generate abstract patterns (sequences of normalized samples).

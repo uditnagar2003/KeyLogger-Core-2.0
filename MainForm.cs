@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-using VisualKeyloggerDetector.Core.Utils;
-using VisualKeyloggerDetector.Core; // Add Core namespace
+﻿using VisualKeyloggerDetector.Core; // Add Core namespace
 using VisualKeyloggerDetector.Core.PatternGeneration; // Add PatternGeneration namespace
-using System.Linq; // Added for Linq
+using VisualKeyloggerDetector.Core.Utils;
 
 namespace VisualKeyloggerDetector
 {
@@ -37,29 +33,29 @@ namespace VisualKeyloggerDetector
 
             // --- Choose a pattern generation algorithm ---
             // Uncomment the desired algorithm:
-            IPatternGeneratorAlgorithm algorithm=null;
+            IPatternGeneratorAlgorithm algorithm = null;
             Random rnd = new Random();
             int algo = 2;
-            switch(algo)
-            { 
+            switch (algo)
+            {
                 case 1:
-                        algorithm= new RandomPatternAlgorithm();
+                    algorithm = new RandomPatternAlgorithm();
                     break;
                 case 2:
-                     algorithm = new RandomFixedRangePatternAlgorithm();
+                    algorithm = new RandomFixedRangePatternAlgorithm();
                     break;
                 case 3:
 
-                     algorithm = new ImpulsePatternAlgorithm(); // Often better variability
+                    algorithm = new ImpulsePatternAlgorithm(); // Often better variability
                     break;
-                case 4:   
+                case 4:
                     // IPatternGeneratorAlgorithm algorithm = new ImpulsePatternAlgorithm();
-                       algorithm = new SineWavePatternAlgorithm();
+                    algorithm = new SineWavePatternAlgorithm();
                     break;
             }
             // Dispose previous instance if any, before creating a new one
             _experimentController?.Dispose();
-            _experimentController = new ExperimentController(_currentConfig,algorithm);
+            _experimentController = new ExperimentController(_currentConfig, algorithm);
 
             // Subscribe to events from the controller to update the UI
             _experimentController.StatusUpdated += ExperimentController_StatusUpdated;
@@ -159,7 +155,8 @@ namespace VisualKeyloggerDetector
             // ToolStripItems don't have InvokeRequired, check the parent StatusStrip
             if (statusStrip1.InvokeRequired)
             {
-                statusStrip1.BeginInvoke(new Action(() => {
+                statusStrip1.BeginInvoke(new Action(() =>
+                {
                     toolStripProgressBar1.Maximum = Math.Max(1, maximum); // Ensure maximum is at least 1
                     toolStripProgressBar1.Value = Math.Max(0, Math.Min(value, toolStripProgressBar1.Maximum)); // Clamp value
                     toolStripProgressBar1.Visible = (maximum > 0 && value < maximum); // Show only when running and max is valid
@@ -183,7 +180,8 @@ namespace VisualKeyloggerDetector
             // Check InvokeRequired on the form itself or a control like startButton
             if (startButton.InvokeRequired)
             {
-                startButton.BeginInvoke(new Action(() => {
+                startButton.BeginInvoke(new Action(() =>
+                {
                     startButton.Enabled = startEnabled;
                     stopButton.Enabled = stopEnabled;
                 }));

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Management; // Requires adding a reference to System.Management.dll
-using System.Threading.Tasks;
+﻿using System.Management; // Requires adding a reference to System.Management.dll
 
 namespace VisualKeyloggerDetector // Main namespace
 {

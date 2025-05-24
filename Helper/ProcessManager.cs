@@ -1,6 +1,4 @@
 ﻿// Add this file to keylogger core project (e.g., Core/Utils/ProcessManager.cs)
-using System;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace VisualKeyloggerDetector.Core.Utils
