@@ -62,6 +62,8 @@ namespace VisualKeyloggerDetector
             _experimentController.ProgressUpdated += ExperimentController_ProgressUpdated;
             _experimentController.ExperimentCompleted += ExperimentController_ExperimentCompleted;
             _experimentController.KeyloggerDetected += ExperimentController_KeyloggerDetected; // Subscribe
+
+
             // Initial UI state
             UpdateStatus($"Ready. Using {algorithm}.");
             SetButtonsEnabled(true, false); // Initial state: Start enabled, Stop disabled

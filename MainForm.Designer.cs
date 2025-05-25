@@ -34,86 +34,84 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.startButton = new System.Windows.Forms.Button();
-            this.stopButton = new System.Windows.Forms.Button();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.toolStripProgressBar1 = new System.Windows.Forms.ToolStripProgressBar();
-            this.statusStrip1.SuspendLayout();
-            this.SuspendLayout();
+            startButton = new Button();
+            stopButton = new Button();
+            statusStrip1 = new StatusStrip();
+            toolStripStatusLabel1 = new ToolStripStatusLabel();
+            toolStripProgressBar1 = new ToolStripProgressBar();
+            statusStrip1.SuspendLayout();
+            SuspendLayout();
             // 
             // startButton
             // 
-            this.startButton.Location = new System.Drawing.Point(38, 32);
-            this.startButton.Margin = new System.Windows.Forms.Padding(2);
-            this.startButton.Name = "startButton";
-            this.startButton.Size = new System.Drawing.Size(110, 32);
-            this.startButton.TabIndex = 0;
-            this.startButton.Text = "Start Detection";
-            this.startButton.UseVisualStyleBackColor = true;
-            this.startButton.Click += new System.EventHandler(this.startButton_Click);
+            startButton.Location = new Point(44, 37);
+            startButton.Margin = new Padding(2);
+            startButton.Name = "startButton";
+            startButton.Size = new Size(128, 37);
+            startButton.TabIndex = 0;
+            startButton.Text = "Start Detection";
+            startButton.UseVisualStyleBackColor = true;
+            startButton.Click += startButton_Click;
             // 
             // stopButton
             // 
-            this.stopButton.Enabled = false;
-            this.stopButton.Location = new System.Drawing.Point(168, 32);
-            this.stopButton.Margin = new System.Windows.Forms.Padding(2);
-            this.stopButton.Name = "stopButton";
-            this.stopButton.Size = new System.Drawing.Size(110, 32);
-            this.stopButton.TabIndex = 1;
-            this.stopButton.Text = "Stop Detection";
-            this.stopButton.UseVisualStyleBackColor = true;
-            this.stopButton.Click += new System.EventHandler(this.stopButton_Click);
+            stopButton.Enabled = false;
+            stopButton.Location = new Point(196, 37);
+            stopButton.Margin = new Padding(2);
+            stopButton.Name = "stopButton";
+            stopButton.Size = new Size(128, 37);
+            stopButton.TabIndex = 1;
+            stopButton.Text = "Stop Detection";
+            stopButton.UseVisualStyleBackColor = true;
+            stopButton.Click += stopButton_Click;
             // 
             // statusStrip1
             // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this.toolStripProgressBar1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 99);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 10, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(316, 22);
-            this.statusStrip1.SizingGrip = false;
-            this.statusStrip1.TabIndex = 2;
-            this.statusStrip1.Text = "statusStrip1";
+            statusStrip1.ImageScalingSize = new Size(20, 20);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { toolStripStatusLabel1, toolStripProgressBar1 });
+            statusStrip1.Location = new Point(0, 116);
+            statusStrip1.Name = "statusStrip1";
+            statusStrip1.Padding = new Padding(1, 0, 12, 0);
+            statusStrip1.Size = new Size(369, 24);
+            statusStrip1.SizingGrip = false;
+            statusStrip1.TabIndex = 2;
+            statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel1
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(305, 17);
-            this.toolStripStatusLabel1.Spring = true;
-            this.toolStripStatusLabel1.Text = "Ready";
-            this.toolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            toolStripStatusLabel1.Size = new Size(206, 19);
+            toolStripStatusLabel1.Spring = true;
+            toolStripStatusLabel1.Text = "Ready";
+            toolStripStatusLabel1.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // toolStripProgressBar1
             // 
-            this.toolStripProgressBar1.Name = "toolStripProgressBar1";
-            this.toolStripProgressBar1.Size = new System.Drawing.Size(100, 16);
-            this.toolStripProgressBar1.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.toolStripProgressBar1.Visible = false;
+            toolStripProgressBar1.Name = "toolStripProgressBar1";
+            toolStripProgressBar1.Size = new Size(117, 18);
+            toolStripProgressBar1.Style = ProgressBarStyle.Continuous;
+            toolStripProgressBar1.Visible = false;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(316, 121);
-            this.Controls.Add(this.statusStrip1);
-            this.Controls.Add(this.stopButton);
-            this.Controls.Add(this.startButton);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Margin = new System.Windows.Forms.Padding(2);
-            this.MaximizeBox = false;
-            this.Name = "MainForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Keylogger Detector";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(369, 140);
+            Controls.Add(statusStrip1);
+            Controls.Add(stopButton);
+            Controls.Add(startButton);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(2);
+            MaximizeBox = false;
+            Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Keylogger Detector";
+            FormClosing += MainForm_FormClosing;
+            Load += MainForm_Load;
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 

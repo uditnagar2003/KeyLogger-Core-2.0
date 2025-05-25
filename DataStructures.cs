@@ -27,17 +27,17 @@ namespace VisualKeyloggerDetector.Core
     public class ExperimentConfiguration
     {
        
-        public int PatternLengthN { get; set; } = 3;
+        public int PatternLengthN { get; set; } = 0;
 
       
-        public int IntervalDurationT { get; set; } = 100;
+        public int IntervalDurationT { get; set; } = 0;
 
         public int T { get; set; } = 1000;
        
-        public int MinKeysPerIntervalKmin { get; set; } = 5;
+        public int MinKeysPerIntervalKmin { get; set; } = 0;
 
         
-        public int MaxKeysPerIntervalKmax { get; set; } = 10;
+        public int MaxKeysPerIntervalKmax { get; set; } = 0;
 
        
         public double DetectionThreshold { get; set; } = 0.7;
