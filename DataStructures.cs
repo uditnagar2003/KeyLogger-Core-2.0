@@ -1,4 +1,6 @@
-﻿namespace VisualKeyloggerDetector.Core
+﻿using VisualKeyloggerDetector.Core.PatternGeneration;
+
+namespace VisualKeyloggerDetector.Core
 {
    
     public class AbstractKeystrokePattern
@@ -50,6 +52,9 @@
         public List<ProcessInfoData> processInfoDatas = new List<ProcessInfoData>();
 
         public List<uint> ProcessIdsToMonitor = new List<uint>();
+
+
+        public int index_algo { get; set; }
 
         public HashSet<string> SafeProcessNames { get; set; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {

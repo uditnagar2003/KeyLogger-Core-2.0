@@ -33,7 +33,7 @@ namespace VisualKeyloggerDetector
 
             // --- Choose a pattern generation algorithm ---
             // Uncomment the desired algorithm:
-            IPatternGeneratorAlgorithm algorithm = null;
+            IPatternGeneratorAlgorithm algorithm =null;
             Random rnd = new Random();
             int algo = 2;
             switch (algo)
@@ -46,11 +46,11 @@ namespace VisualKeyloggerDetector
                     break;
                 case 3:
 
-                    algorithm = new ImpulsePatternAlgorithm(); // Often better variability
+                   algorithm = new ImpulsePatternAlgorithm(); // Often better variability
                     break;
                 case 4:
                     // IPatternGeneratorAlgorithm algorithm = new ImpulsePatternAlgorithm();
-                    algorithm = new SineWavePatternAlgorithm();
+                   algorithm = new SineWavePatternAlgorithm();
                     break;
             }
             // Dispose previous instance if any, before creating a new one
@@ -63,7 +63,7 @@ namespace VisualKeyloggerDetector
             _experimentController.ExperimentCompleted += ExperimentController_ExperimentCompleted;
             _experimentController.KeyloggerDetected += ExperimentController_KeyloggerDetected; // Subscribe
             // Initial UI state
-            UpdateStatus($"Ready. Using {algorithm.GetType().Name}.");
+            UpdateStatus($"Ready. Using {algorithm}.");
             SetButtonsEnabled(true, false); // Initial state: Start enabled, Stop disabled
             UpdateProgressBar(0, 1); // Reset progress bar state
             toolStripProgressBar1.Visible = false; // Hide progress bar initially
