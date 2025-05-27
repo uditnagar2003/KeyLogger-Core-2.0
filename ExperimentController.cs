@@ -34,7 +34,9 @@ namespace VisualKeyloggerDetector.Core
 
         public event EventHandler<DetectionResult> KeyloggerDetected;
 
-        
+        public event EventHandler<ProcessWriteInfoData> ProcessWriteCount;
+
+
         public ExperimentController(ExperimentConfiguration config, IPatternGeneratorAlgorithm patternAlgorithm)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -51,7 +53,9 @@ namespace VisualKeyloggerDetector.Core
             // Example: _injector.StatusUpdate += (s, msg) => OnStatusUpdated($"Injector: {msg}");
         }
 
+        //injector events
        
+
         protected virtual void OnStatusUpdated(string message) => StatusUpdated?.Invoke(this, message);
 
         protected virtual void OnProgressUpdated(int current, int total) => ProgressUpdated?.Invoke(this, (current, total));
@@ -62,6 +66,9 @@ namespace VisualKeyloggerDetector.Core
 
         public async Task StartExperimentAsync()
         {
+            // Subscribe to injector status updates
+            _injector.StatusUpdate += (s, msg) => OnStatusUpdated($"Injector: {msg}");
+            _injector.ProcessInfoUpdate+= (s, data) => ProcessWriteCount?.Invoke(this, data);
             if (_isRunning)
             {
                 OnStatusUpdated("Experiment is already running.");

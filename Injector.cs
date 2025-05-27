@@ -20,7 +20,11 @@ namespace VisualKeyloggerDetector.Core.Injection
         
         public event EventHandler<int> ProgressUpdate;
 
-        
+        public event EventHandler<ProcessWriteInfoData> ProcessInfoUpdate;
+
+         protected  virtual void OnProcessInfoUpdate(ProcessWriteInfoData processWriteInfoData) => ProcessInfoUpdate?.Invoke(this, processWriteInfoData);
+
+
         protected virtual void OnStatusUpdate(string message) => StatusUpdate?.Invoke(this, message);
 
        
@@ -147,6 +151,16 @@ namespace VisualKeyloggerDetector.Core.Injection
                     {
                         if (results[pid].Count < _config.PatternLengthN && monitoringResult.ContainsKey(pid))
                         {
+                            //ProcessInfoData info = (ProcessInfoData)_config.processInfoDatas.Where(p => p.Id == pid);
+                            ProcessWriteInfoData infoData = new ProcessWriteInfoData
+                            {
+                                Id =pid,
+                                Name = "Name",
+                                ExecutablePath = "ExecutablePath",
+                                WriteCount = monitoringResult[pid]
+                            };
+                           
+                            OnProcessInfoUpdate(infoData); // Notify about process info update
                             results[pid].Add(monitoringResult[pid]);
                             // Console.WriteLine($"PID {pid}: Interval {i + 1} - Bytes Written: {monitoringResult[pid]} {DateTime.Now.ToString("HH:mm:ss.fff")}");
                         }

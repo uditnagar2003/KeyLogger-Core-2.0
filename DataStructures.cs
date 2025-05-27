@@ -70,8 +70,14 @@ namespace VisualKeyloggerDetector.Core
           */
         };
     }
+    public class ProcessWriteInfoData
+    {
+        public uint Id { get; set; }
+        public string Name { get; set; }
+        public string ExecutablePath { get; set; }
+        public ulong WriteCount { get; set; }
+    }
 
-   
     public class DetectionResult
     {
         
