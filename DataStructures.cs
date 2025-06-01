@@ -49,7 +49,8 @@ namespace VisualKeyloggerDetector.Core
         public string ResultsFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "detector_results_v2.txt");
 
 
-        public List<ProcessInfoData> processInfoDatas = new List<ProcessInfoData>();
+
+        public Dictionary<uint, ProcessInfoData> ProcessInfoDataMap = new Dictionary<uint, ProcessInfoData>();
 
         public List<uint> ProcessIdsToMonitor = new List<uint>();
 
@@ -91,7 +92,9 @@ namespace VisualKeyloggerDetector.Core
 
         public double Correlation { get; set; }
 
-       
+        public DateTime DetectionTime { get; set; }
+
+
         public double AverageBytesWrittenPerInterval { get; set; }
 
        

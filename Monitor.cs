@@ -125,7 +125,7 @@ namespace VisualKeyloggerDetector.Core.Monitoring
             } // End interval loop (i)
 
            
-            OnStatusUpdate("Monitoring finished.");
+            OnStatusUpdate("Monitoring finished fir this interal ");
             Debug.WriteLine($"Monitoring finished. {DateTime.Now.ToString("HH:mm:ss.fff")}");
             return results;
         }

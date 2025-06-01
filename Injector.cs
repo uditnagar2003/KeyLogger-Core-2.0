@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using VisualKeyloggerDetector.Core.Monitoring;
-using VisualKeyloggerDetector.Core.Translation; // Needs access to KeystrokeStreamSchedule
+using VisualKeyloggerDetector.Core.Translation;
+using Windows.UI.Xaml; // Needs access to KeystrokeStreamSchedule
 
 namespace VisualKeyloggerDetector.Core.Injection
 {
@@ -27,8 +28,8 @@ namespace VisualKeyloggerDetector.Core.Injection
 
         protected virtual void OnStatusUpdate(string message) => StatusUpdate?.Invoke(this, message);
 
-       
-        protected virtual void OnProgressUpdate(int intervalIndex) => ProgressUpdate?.Invoke(this, intervalIndex);
+
+        protected virtual void OnProgressUpdate(int progress1) => ProgressUpdate?.Invoke(this, progress1);
 
        
         public async Task<InjectorResult> InjectStreamAsync(KeystrokeStreamSchedule schedule, ExperimentConfiguration _config1, CancellationToken cancellationToken = default)
@@ -80,13 +81,14 @@ namespace VisualKeyloggerDetector.Core.Injection
                         }
                         else
                         {
-                            _config.processInfoDatas.Add(new ProcessInfoData
+                          /*  _config.processInfoDatas.Add(new ProcessInfoData
                             {
                                 Id = pInfo.Id,
                                 Name = pInfo.Name,
                                 ExecutablePath = pInfo.ExecutablePath,
                                 WriteCount = pInfo.WriteCount
-                            });
+                            });*/
+                            _config.ProcessInfoDataMap[pInfo.Id] = pInfo; // Update the map with the new process info
                             // Fix for CS8602: Dereference of a possibly null reference.
                             if (_config.ProcessIdsToMonitor != null)
                             {
@@ -152,11 +154,12 @@ namespace VisualKeyloggerDetector.Core.Injection
                         if (results[pid].Count < _config.PatternLengthN && monitoringResult.ContainsKey(pid))
                         {
                             //ProcessInfoData info = (ProcessInfoData)_config.processInfoDatas.Where(p => p.Id == pid);
+                            ProcessInfoData pro = _config.ProcessInfoDataMap[pid]; // Get process info from the map
                             ProcessWriteInfoData infoData = new ProcessWriteInfoData
                             {
                                 Id =pid,
-                                Name = "Name",
-                                ExecutablePath = "ExecutablePath",
+                                Name =pro.Name ,
+                                ExecutablePath = pro.ExecutablePath,
                                 WriteCount = monitoringResult[pid]
                             };
                            
@@ -181,7 +184,7 @@ namespace VisualKeyloggerDetector.Core.Injection
                 await Task.Delay(1000, cancellationToken); // Optional delay before finishing
 
                 //Console.WriteLine($"interval ended {DateTime.Now.ToString("HH:mm:ss.fff")} " + i);
-                OnProgressUpdate(i); // Report progress after completing interval i
+                OnProgressUpdate(i+4); // Report progress after completing interval i
 
             } // End interval loop (i)
             foreach (var pid in processSet)
@@ -206,7 +209,7 @@ namespace VisualKeyloggerDetector.Core.Injection
                     filteredResult[kvp.Key] = kvp.Value;
                 }
             }
-            OnProgressUpdate(totalIntervals - 1); // Indicate completion of the last interval
+            //OnProgressUpdate(totalIntervals - 1); // Indicate completion of the last interval
             OnStatusUpdate("Injection finished.");
             return filteredResult;
 

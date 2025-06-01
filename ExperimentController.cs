@@ -49,8 +49,7 @@ namespace VisualKeyloggerDetector.Core
             _monitor = new Monitors(_config);
             _detector = new Detector();
 
-            // Optional: Wire up internal component events to the controller's events if needed
-            // Example: _injector.StatusUpdate += (s, msg) => OnStatusUpdated($"Injector: {msg}");
+            
         }
 
         //injector events
@@ -69,6 +68,8 @@ namespace VisualKeyloggerDetector.Core
             // Subscribe to injector status updates
             _injector.StatusUpdate += (s, msg) => OnStatusUpdated($"Injector: {msg}");
             _injector.ProcessInfoUpdate+= (s, data) => ProcessWriteCount?.Invoke(this, data);
+           
+            _injector.ProgressUpdate += (s,pro) => OnProgressUpdated(pro,6+_config.PatternLengthN);
             if (_isRunning)
             {
                 OnStatusUpdated("Experiment is already running.");
@@ -80,7 +81,8 @@ namespace VisualKeyloggerDetector.Core
             var token = _cts.Token;
             var overallResults = new List<DetectionResult>();
             // Define total major steps for progress reporting
-            const int totalSteps = 6;
+             int totalSteps = 5+_config.PatternLengthN;
+            OnStatusUpdated("Starting experiment...");
 
             try
             {
@@ -112,9 +114,15 @@ namespace VisualKeyloggerDetector.Core
                     OnStatusUpdated($"ERROR during process query: {ex.Message}. Aborting experiment.");
                     throw; // Rethrow to be caught by the main catch block
                 }
-                _config.processInfoDatas = FilterCandidateProcesses(allProcesses);
+
+                allProcesses = FilterCandidateProcesses(allProcesses);
+                foreach(var p in allProcesses)
+                {
+                    _config.ProcessInfoDataMap[p.Id] = p; // Populate the map for quick access
+                   
+                }
                 // _config.processInfoDatas = allProcesses.Where(p => p != null).ToList(); // Filter out nulls
-                _config.ProcessIdsToMonitor = _config.processInfoDatas.Select(p => p.Id).ToList();
+                _config.ProcessIdsToMonitor = _config.ProcessInfoDataMap.Keys.ToList();//processInfoDatas.Select(p => p.Id).ToList();
                 int length = _config.ProcessIdsToMonitor.Count;
                 Debug.WriteLine($"INfo process legthn {length}");
                 for (int i = 0; i < length; i++)
@@ -158,16 +166,16 @@ namespace VisualKeyloggerDetector.Core
                 }
 
                 // --- Step 5: Analyze Results ---
-                OnProgressUpdated(4, totalSteps);
+                OnProgressUpdated(4+_config.PatternLengthN, totalSteps);
                 OnStatusUpdated("Step 5/6: Analyzing collected data...");
                 Debug.WriteLine("entering analysis");
-                overallResults = AnalyzeMonitoringResults(inputPattern, monitoringResult, _config.processInfoDatas);
+                overallResults = AnalyzeMonitoringResults(inputPattern, monitoringResult, _config.ProcessInfoDataMap);
                 OnStatusUpdated($"Analysis complete. Found {overallResults.Count(r => r.IsDetected)} potential detection(s).");
                 Debug.WriteLine($"Analysis complete. Found {overallResults.Count(r => r.IsDetected)} potential detection(s).");
                 token.ThrowIfCancellationRequested();
 
                 // --- Step 6: Write Results ---
-                OnProgressUpdated(5, totalSteps);
+                OnProgressUpdated(5+_config.PatternLengthN, totalSteps);
                 OnStatusUpdated("Step 6/6: Writing results to file...");
                 WriteResultsToFile(overallResults);
                 OnStatusUpdated($"Results saved to {_config.ResultsFilePath}");
@@ -238,11 +246,11 @@ namespace VisualKeyloggerDetector.Core
         private List<DetectionResult> AnalyzeMonitoringResults(
             AbstractKeystrokePattern inputPattern,
             InjectorResult monitoringResult,
-            List<ProcessInfoData> candidateProcessInfo)
+            Dictionary<uint, ProcessInfoData> processInfoMap)
         {
             var detectionResults = new List<DetectionResult>();
             // Create a lookup map for quick access to process info by PID
-            var processInfoMap = candidateProcessInfo.Where(p => p != null).ToDictionary(p => p.Id);
+          //  var processInfoMap = candidateProcessInfo.Where(p => p != null).ToDictionary(p => p.Id);
             Debug.WriteLine($" monitoring result length in analyzer {monitoringResult.Count}");
 
             if (monitoringResult == null) return detectionResults;
@@ -291,6 +299,7 @@ namespace VisualKeyloggerDetector.Core
                     ProcessId = pid,
                     ProcessName = pInfo.Name,
                     ExecutablePath = pInfo.ExecutablePath,
+                    DetectionTime = DateTime.Now,
                     Correlation = pcc, // Can be NaN
                     AverageBytesWrittenPerInterval = avgBytes,
                     Threshold = _config.DetectionThreshold // Store threshold used for this analysis
