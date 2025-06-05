@@ -79,42 +79,7 @@ namespace VisualKeyloggerDetector.Core.Utils
         }
 
        
-        public static bool ResumeProcess(uint processId)
-        {
-            IntPtr hProcess = IntPtr.Zero;
-            try
-            {
-                hProcess = OpenProcess(ProcessAccessFlags.SuspendResume, false, processId);
-                if (hProcess == IntPtr.Zero)
-                {
-                    Console.WriteLine($"Failed to open process {processId}. Error: {Marshal.GetLastWin32Error()}");
-                    return false;
-                }
-
-                int ntStatus = NtResumeProcess(hProcess);
-                if (ntStatus != 0) // 0 is STATUS_SUCCESS
-                {
-                    Console.WriteLine($"Failed to resume process {processId}. NTSTATUS: {ntStatus:X}");
-                    return false;
-                }
-
-                Console.WriteLine($"Process {processId} resumed successfully.");
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception resuming process {processId}: {ex.Message}");
-                return false;
-            }
-            finally
-            {
-                if (hProcess != IntPtr.Zero)
-                {
-                    CloseHandle(hProcess);
-                }
-            }
-        }
-       
+        
         public static bool TerminateProcess(uint processId)
         {
             IntPtr hProcess = IntPtr.Zero;
